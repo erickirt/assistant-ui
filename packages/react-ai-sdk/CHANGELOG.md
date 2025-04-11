@@ -1,5 +1,22 @@
 # @assistant-ui/react-ai-sdk
 
+## 0.9.1
+
+### Patch Changes
+
+- chore: update deps
+- Updated dependencies
+  - @assistant-ui/react-edge@0.1.1
+  - @assistant-ui/react@0.9.1
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [afae5c9]
+  - @assistant-ui/react@0.8.21
+  - @assistant-ui/react-edge@0.8.21
+
 ## 0.8.1
 
 ### Patch Changes

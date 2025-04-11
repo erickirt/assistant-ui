@@ -1,5 +1,31 @@
 # assistant-stream
 
+## 0.1.2
+
+### Patch Changes
+
+- chore: update deps
+
+## 0.1.1
+
+### Patch Changes
+
+- fix: throw error when LineDecoderStream ends with incomplete line instead of emitting it
+
+## 0.1.0
+
+### Patch Changes
+
+- 1f65c94: fix: ToolResponse instanceof check via named symbol
+- 8df35f6: feat: fix duplicate tool calls appearing from ai-sdk
+- 476cbfb: fix: make text-delta support reasoning part type
+
+## 0.0.32
+
+### Patch Changes
+
+- 545a17c: fix: do not crash on tool call with empty argsText
+
 ## 0.0.31
 
 ### Patch Changes

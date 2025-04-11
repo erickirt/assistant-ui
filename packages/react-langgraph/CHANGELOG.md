@@ -1,5 +1,25 @@
 # @assistant-ui/react-langgraph
 
+## 0.4.1
+
+### Patch Changes
+
+- chore: update deps
+- Updated dependencies
+  - @assistant-ui/react@0.9.1
+
+## 0.4.0
+
+### Patch Changes
+
+- afae5c9: refactor!: drop deprecated unstable_allowImageAttachments
+
+## 0.3.2
+
+### Patch Changes
+
+- 4065dae: feat: artifact support
+
 ## 0.3.1
 
 ### Patch Changes

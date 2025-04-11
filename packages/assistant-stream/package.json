@@ -1,6 +1,6 @@
 {
   "name": "assistant-stream",
-  "version": "0.0.31",
+  "version": "0.1.2",
   "license": "MIT",
   "exports": {
     ".": {
@@ -22,6 +22,16 @@
         "types": "./dist/ai-sdk.d.ts",
         "default": "./dist/ai-sdk.js"
       }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.mts",
+        "default": "./dist/utils.mjs"
+      },
+      "require": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      }
     }
   },
   "source": "./src/index.ts",
@@ -31,6 +41,7 @@
   "files": [
     "dist",
     "ai-sdk",
+    "utils",
     "README.md"
   ],
   "sideEffects": false,
@@ -39,9 +50,9 @@
   },
   "devDependencies": {
     "@assistant-ui/tsconfig": "workspace:*",
-    "ai": "^4.3.2",
+    "ai": "^4.3.5",
     "eslint": "^9",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "15.3.0",
     "tsup": "8.4.0",
     "tsx": "^4.19.3"
   },

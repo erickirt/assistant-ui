@@ -1,5 +1,23 @@
 # assistant-ui
 
+## 0.0.42
+
+### Patch Changes
+
+- chore: update deps
+
+## 0.0.41
+
+### Patch Changes
+
+- cdca350: feat: codemods performance improvement
+
+## 0.0.41
+
+### Patch Changes
+
+- feat: add migration for v0-9
+
 ## 0.0.40
 
 ### Patch Changes
