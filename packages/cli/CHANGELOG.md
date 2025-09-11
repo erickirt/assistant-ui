@@ -1,5 +1,11 @@
 # assistant-ui
 
+## 0.0.59
+
+### Patch Changes
+
+- 6649f70: feat: auto-update assistant-cloud
+
 ## 0.0.58
 
 ### Patch Changes
