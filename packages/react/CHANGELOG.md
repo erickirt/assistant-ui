@@ -1,5 +1,11 @@
 # @assistant-ui/react
 
+## 0.11.22
+
+### Patch Changes
+
+- e8d6d7b: feat: revamp Assistant augmentation mechanism
+
 ## 0.11.21
 
 ### Patch Changes
