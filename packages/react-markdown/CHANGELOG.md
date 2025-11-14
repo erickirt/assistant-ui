@@ -1,5 +1,14 @@
 # @assistant-ui/react-markdown
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [66a13a0]
+- Updated dependencies [4e3877e]
+- Updated dependencies [eef682b]
+  - @assistant-ui/react@0.12.0
+
 ## 0.11.4
 
 ### Patch Changes
