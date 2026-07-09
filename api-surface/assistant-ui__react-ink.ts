@@ -2612,6 +2612,7 @@ type PendingAttachmentStatus = {
 } | {
   type: "incomplete";
   reason: "error" | "upload-paused";
+  message?: string;
 };
 
 type PressableProps = Omit<ComponentProps<typeof Box>, "children"> & {

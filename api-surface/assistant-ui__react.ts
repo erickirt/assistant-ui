@@ -3246,6 +3246,7 @@ type PendingAttachmentStatus = {
 } | {
   type: "incomplete";
   reason: "error" | "upload-paused";
+  message?: string;
 };
 
 declare const Primitive$1: {

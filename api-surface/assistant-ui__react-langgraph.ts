@@ -1317,6 +1317,7 @@ type PendingAttachmentStatus = {
 } | {
   type: "incomplete";
   reason: "error" | "upload-paused";
+  message?: string;
 };
 
 type ProviderOptions = Record<string, Record<string, unknown>>;
