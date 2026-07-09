@@ -2526,6 +2526,7 @@ interface ParsedLine {
   content: string;
   oldLineNumber?: number;
   newLineNumber?: number;
+  hunkIndex?: number;
 }
 
 declare const PartByIndexProvider: FC<PropsWithChildren<{
