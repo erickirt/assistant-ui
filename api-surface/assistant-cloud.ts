@@ -245,6 +245,11 @@ type AssistantStreamEncoder = ReadableWritablePair<Uint8Array<ArrayBuffer>, Assi
   headers?: Headers;
 };
 
+declare class CloudAPIError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number);
+}
+
 type CloudMessage = {
   id: string;
   parent_id: string | null;
@@ -462,7 +467,7 @@ declare function createSamplingCollector(): {
 };
 
 declare namespace entry_root_exports {
-  export { AssistantCloud, AssistantCloudRunReport, AssistantCloudTelemetryConfig, CloudMessage, CloudMessagePersistence, McpSamplingHandler, MessageFormatAdapter, SamplingCallData, createFormattedPersistence, createSamplingCollector, wrapSamplingHandler };
+  export { AssistantCloud, AssistantCloudRunReport, AssistantCloudTelemetryConfig, CloudAPIError, CloudMessage, CloudMessagePersistence, McpSamplingHandler, MessageFormatAdapter, SamplingCallData, createFormattedPersistence, createSamplingCollector, wrapSamplingHandler };
 }
 
 declare function wrapSamplingHandler(handler: McpSamplingHandler, onSamplingCall: (data: SamplingCallData) => void): McpSamplingHandler;
