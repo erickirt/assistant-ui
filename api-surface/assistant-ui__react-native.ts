@@ -2,7 +2,7 @@ import { StandardSchemaV1 } from "@standard-schema/spec";
 
 import React, { ComponentType, FC, PropsWithChildren, ReactElement, ReactNode } from "react";
 
-import { FlatListProps, PressableProps, TextInputProps, TextProps, ViewProps } from "react-native";
+import { FlatList, FlatListProps, PressableProps, TextInputProps, TextProps, ViewProps } from "react-native";
 
 declare const ActionBarCopy: (_param0: ActionBarCopyProps) => import("react").JSX.Element;
 
@@ -3083,10 +3083,7 @@ type ThreadMessageLike = {
   } | undefined;
 };
 
-declare const ThreadMessages: {
-  (_param42: ThreadMessagesProps): import("react").JSX.Element;
-  displayName: string;
-};
+declare const ThreadMessages: import("react").ForwardRefExoticComponent<ThreadMessagesProps & import("react").RefAttributes<FlatList<ThreadMessage>>>;
 
 type ThreadMessagesProps = Omit<FlatListProps<ThreadMessage>, "children" | "data" | "renderItem"> & MessagesContent;
 
@@ -3131,7 +3128,7 @@ declare namespace ThreadPrimitiveUnstable_MessageById {
 
 declare const ThreadPrimitiveUnstable_MessageById: FC<ThreadPrimitiveUnstable_MessageById.Props>;
 
-declare const ThreadRoot: (_param43: ThreadRootProps) => import("react").JSX.Element;
+declare const ThreadRoot: (_param42: ThreadRootProps) => import("react").JSX.Element;
 
 type ThreadRootProps = ViewProps & {
   children: ReactNode;
@@ -3400,7 +3397,7 @@ type ThreadStep = {
   } | undefined;
 };
 
-declare const ThreadSuggestion: (_param44: ThreadSuggestionProps) => import("react").JSX.Element;
+declare const ThreadSuggestion: (_param43: ThreadSuggestionProps) => import("react").JSX.Element;
 
 type ThreadSuggestion$1 = {
   prompt: string;
@@ -4093,7 +4090,7 @@ declare const useInteractableState: <TState>(id: string, fallback: TState) => [
   }
 ];
 
-declare const useLocalRuntime: (chatModel: ChatModelAdapter, _param45?: LocalRuntimeOptions) => AssistantRuntime;
+declare const useLocalRuntime: (chatModel: ChatModelAdapter, _param44?: LocalRuntimeOptions) => AssistantRuntime;
 
 declare const useRemoteThreadListRuntime: (options: RemoteThreadListOptions) => AssistantRuntime;
 
