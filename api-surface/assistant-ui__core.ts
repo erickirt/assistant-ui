@@ -2259,6 +2259,7 @@ type McpToolkitDefinition = Record<string, McpToolkitEntry>;
 type McpToolkitEntry = McpServerConfig | {
   server: McpServerConfig;
   disabled?: boolean | undefined;
+  prefix?: string | undefined;
   tools?: Record<string, McpToolkitToolConfig> | undefined;
 };
 
