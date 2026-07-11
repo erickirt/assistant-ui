@@ -78,6 +78,7 @@ type BuiltRegistryPayload = {
   payload: RegistryOutputItem;
   readPaths: string[];
   baseVariantOutputPaths: string[];
+  sourceContentsByOutputPath: Map<string, string>;
 };
 
 export function validateBaseVariantContent(built: BuiltRegistryPayload[]) {
@@ -114,6 +115,7 @@ function createRegistryPayload(
 ): BuiltRegistryPayload {
   const readPaths: string[] = [];
   const baseVariantOutputPaths: string[] = [];
+  const sourceContentsByOutputPath = new Map<string, string>();
   const files = item.files?.map((file) => {
     const sourcePath = file.sourcePath ?? file.path;
     const baseVariantPath = useBaseVariants
@@ -128,6 +130,7 @@ function createRegistryPayload(
       baseVariantOutputPaths.push(file.path);
     }
     let content = readFileSync(path.join(process.cwd(), readPath), "utf8");
+    sourceContentsByOutputPath.set(file.path, content);
 
     if (usesBaseVariant) {
       content = content.replace(
@@ -155,6 +158,7 @@ function createRegistryPayload(
     payload: files ? { ...payload, files } : payload,
     readPaths,
     baseVariantOutputPaths,
+    sourceContentsByOutputPath,
   };
 }
 
@@ -203,23 +207,19 @@ export function validateVariantTreesDiffer(
     }
 
     for (const filePath of base.baseVariantOutputPaths) {
-      const radixContent = radix.payload.files?.find(
-        (file) => file.path === filePath,
-      )?.content;
-      const baseContent = base.payload.files?.find(
-        (file) => file.path === filePath,
-      )?.content;
+      const radixContent = radix.sourceContentsByOutputPath.get(filePath);
+      const baseContent = base.sourceContentsByOutputPath.get(filePath);
 
       if (radixContent === undefined || baseContent === undefined) {
         findings.add(
-          `${base.payload.name}: missing emitted content for ${filePath} while comparing radix and base trees`,
+          `${base.payload.name}: missing source content for ${filePath} while comparing radix and base trees`,
         );
         continue;
       }
 
       if (radixContent === baseContent) {
         findings.add(
-          `${base.payload.name}: radix and base content for ${filePath} are identical despite a .base.tsx variant`,
+          `${base.payload.name}: radix and base sources for ${filePath} are identical despite a .base.tsx variant`,
         );
       }
     }
