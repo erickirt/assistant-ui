@@ -841,6 +841,10 @@ type ParentOf<K extends ClientNames> = AssistantClientAccessor<K> extends {
   source: infer S;
 } ? S extends ClientNames ? S : never : never;
 
+type PartProviderMetadata = {
+  readonly [providerName: string]: ReadonlyJSONObject;
+};
+
 type PendingAttachment = BaseAttachment & {
   status: PendingAttachmentStatus;
   file: File;
@@ -1652,6 +1656,7 @@ type RealtimeVoiceAdapter = {
 type ReasoningMessagePart = {
   readonly type: "reasoning";
   readonly text: string;
+  readonly providerMetadata?: PartProviderMetadata;
   readonly parentId?: string;
 };
 
@@ -1725,9 +1730,7 @@ type SourceMessagePart = {
   readonly parentId?: string;
 };
 
-type SourceProviderMetadata = {
-  readonly [providerName: string]: ReadonlyJSONObject;
-};
+type SourceProviderMetadata = PartProviderMetadata;
 
 interface SpeechRecognitionConstructor {
   new (): SpeechRecognitionInstance;
@@ -1788,6 +1791,7 @@ declare const TOOL_RESPONSE_SYMBOL: unique symbol;
 type TextMessagePart = {
   readonly type: "text";
   readonly text: string;
+  readonly providerMetadata?: PartProviderMetadata;
   readonly parentId?: string;
 };
 
@@ -1939,6 +1943,7 @@ type ThreadMessageLike = {
       payload: unknown;
     };
     readonly timing?: ToolCallTiming;
+    readonly providerMetadata?: PartProviderMetadata;
     readonly approval?: {
       readonly id: string;
       readonly approved?: boolean;
@@ -2129,6 +2134,7 @@ type ToolCallMessagePart<TArgs = ReadonlyJSONObject, TResult = unknown> = {
   readonly artifact?: unknown;
   readonly timing?: ToolCallTiming;
   readonly mcp?: ToolCallMessagePartMcpMetadata;
+  readonly providerMetadata?: PartProviderMetadata;
   readonly modelContent?: readonly ToolModelContentPart[] | undefined;
   readonly interrupt?: {
     type: "human";
