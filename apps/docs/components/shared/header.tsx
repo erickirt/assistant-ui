@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X, ArrowUpRight, ArrowRight, Search } from "lucide-react";
 import { usePersistentBoolean } from "@/hooks/use-persistent-boolean";
 import { usePathname } from "next/navigation";
@@ -18,6 +17,7 @@ import {
 } from "@/components/shared/cloud-button";
 import { useAssistantPanel } from "@/components/docs/assistant/context";
 import { NavItems } from "@/components/shared/nav-items";
+import { HeaderBrandLink } from "@/components/shared/header-brand-link";
 
 function SearchButton({ onToggle }: { onToggle: () => void }) {
   useEffect(() => {
@@ -114,16 +114,7 @@ export function Header() {
       <div className="from-background pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b to-transparent mask-[linear-gradient(to_bottom,black_75%,transparent)] backdrop-blur-xl" />
       <div className="relative mx-auto flex h-12 w-full max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/favicon/icon.svg"
-              alt="assistant-ui logo"
-              width={18}
-              height={18}
-              className="dark:hue-rotate-180 dark:invert"
-            />
-            <span className="font-medium tracking-tight">assistant-ui</span>
-          </Link>
+          <HeaderBrandLink />
 
           <nav className="hidden items-center md:flex">
             <NavItems items={NAV_ITEMS} />
