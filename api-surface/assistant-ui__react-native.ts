@@ -2636,6 +2636,7 @@ type SuggestionAdapter = {
 
 type SuggestionAdapterGenerateOptions = {
   messages: readonly ThreadMessage[];
+  signal?: AbortSignal;
 };
 
 declare const SuggestionByIndexProvider: FC<SuggestionByIndexProviderProps>;
