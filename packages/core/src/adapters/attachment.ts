@@ -85,7 +85,7 @@ export const getFileDataURL = async (file: File): Promise<string> => {
 
 export class SimpleTextAttachmentAdapter implements AttachmentAdapter {
   public accept =
-    "text/plain,text/html,text/markdown,text/csv,text/xml,text/json,text/css";
+    "text/plain,text/html,text/markdown,text/csv,text/xml,text/json,application/json,text/css";
 
   public async add(state: { file: File }): Promise<PendingAttachment> {
     return {
@@ -143,7 +143,7 @@ export function fileMatchesAccept(
     .map((type) => type.trim().toLowerCase());
 
   const fileExtension = `.${file.name.split(".").pop()!.toLowerCase()}`;
-  const fileMimeType = file.type.toLowerCase();
+  const fileMimeType = file.type.split(";", 1)[0]!.trim().toLowerCase();
 
   for (const type of allowedTypes) {
     if (type.startsWith(".") && type === fileExtension) {
