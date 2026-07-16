@@ -309,6 +309,36 @@ describe("AGUIThreadRuntimeCore", () => {
     expect(core.getState()).toEqual({ count: 1, label: "initial" });
   });
 
+  it("resetState clears the snapshot so the next run sends null state", async () => {
+    const runAgent = vi.fn(async (_input, subscriber) => {
+      if (runAgent.mock.calls.length === 1) {
+        subscriber.onStateSnapshotEvent?.({
+          event: {
+            type: "STATE_SNAPSHOT",
+            snapshot: { count: 1 },
+          },
+        });
+      }
+      subscriber.onRunFinalized?.();
+    });
+    const agent = { runAgent } as unknown as HttpAgent;
+
+    const core = createCore(agent);
+    await core.append(createAppendMessage());
+    expect(core.getState()).toEqual({ count: 1 });
+
+    core.resetState();
+    expect(core.getState()).toBeUndefined();
+
+    await core.resume({
+      parentId: null,
+      sourceId: null,
+      runConfig: {} as TestRunConfig,
+    });
+
+    expect(runAgent.mock.calls[1]?.[0].state).toBeNull();
+  });
+
   it("applies deltas before a snapshot from an empty state object", async () => {
     const runInputs: any[] = [];
     const agent = {
@@ -3162,6 +3192,77 @@ describe("AGUIThreadRuntimeCore", () => {
     await core.append(createAppendMessage());
 
     expect(stateAtRun).toEqual({ initial: false, snapshot: 42 });
+  });
+
+  it("setState updates getState immediately", () => {
+    const agent = {
+      runAgent: vi.fn(async (_input, subscriber) => {
+        subscriber.onRunFinalized?.();
+      }),
+    } as unknown as HttpAgent;
+
+    const core = createCore(agent);
+    core.setState({ count: 7 });
+    expect(core.getState()).toEqual({ count: 7 });
+  });
+
+  it("setState rides the next run as input.state", async () => {
+    const runInputs: any[] = [];
+    const agent = {
+      runAgent: vi.fn(async (input, subscriber) => {
+        runInputs.push(JSON.parse(JSON.stringify(input)));
+        subscriber.onRunFinalized?.();
+      }),
+    } as unknown as HttpAgent;
+
+    const core = createCore(agent);
+    core.setState({ count: 3, label: "optimistic" });
+    await core.append(createAppendMessage());
+
+    expect(runInputs[0].state).toEqual({ count: 3, label: "optimistic" });
+  });
+
+  it("composes chained functional setState updaters in the same tick", async () => {
+    const runInputs: any[] = [];
+    const agent = {
+      runAgent: vi.fn(async (input, subscriber) => {
+        runInputs.push(JSON.parse(JSON.stringify(input)));
+        subscriber.onRunFinalized?.();
+      }),
+    } as unknown as HttpAgent;
+
+    const core = createCore(agent);
+    core.setState({ count: 0 });
+    core.setState((prev) => ({
+      count: ((prev as { count?: number } | undefined)?.count ?? 0) + 1,
+    }));
+    core.setState((prev) => ({
+      count: ((prev as { count?: number } | undefined)?.count ?? 0) + 1,
+    }));
+    expect(core.getState()).toEqual({ count: 2 });
+
+    await core.append(createAppendMessage());
+    expect(runInputs[0].state).toEqual({ count: 2 });
+  });
+
+  it("applies STATE_DELTA on top of a setState snapshot", async () => {
+    const agent = {
+      runAgent: vi.fn(async (_input, subscriber) => {
+        subscriber.onStateDeltaEvent?.({
+          event: {
+            type: "STATE_DELTA",
+            delta: [{ op: "replace", path: "/count", value: 2 }],
+          },
+        });
+        subscriber.onRunFinalized?.();
+      }),
+    } as unknown as HttpAgent;
+
+    const core = createCore(agent);
+    core.setState({ count: 1, label: "base" });
+    await core.append(createAppendMessage());
+
+    expect(core.getState()).toEqual({ count: 2, label: "base" });
   });
 
   it("adopts TEXT_MESSAGE_START.messageId as the ThreadAssistantMessage.id", async () => {
