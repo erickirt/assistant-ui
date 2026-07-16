@@ -9,6 +9,7 @@ import {
   CARD_SUBTEXT_CAP,
   CARD_TITLE_CAP,
   CAROUSEL_CARD_CAP,
+  CHILDREN_CAP,
   CONTEXT_ELEMENT_CAP,
   CONTEXT_TEXT_CAP,
   DATA_TABLE_CHAR_BUDGET,
@@ -22,6 +23,7 @@ import {
   MARKDOWN_TEXT_BUDGET,
   MESSAGE_BLOCK_CAP,
   MODAL_BLOCK_CAP,
+  NODE_BUDGET,
   PLACEHOLDER_TEXT_CAP,
   RADIO_OPTION_CAP,
   SECTION_TEXT_CAP,
@@ -1763,6 +1765,28 @@ describe("toSlackBlocks", () => {
       }
     });
 
+    it("bounds a hostile root-level Proxy array with a fabricated length instead of hanging", () => {
+      const hostileRoot = new Proxy([], {
+        get(target, prop) {
+          if (prop === "length") return 2 ** 31;
+          if (typeof prop === "string" && /^\d+$/.test(prop)) {
+            return { $type: "Text", value: "x" };
+          }
+          return Reflect.get(target, prop);
+        },
+        has(target, prop) {
+          if (prop === "length") return true;
+          if (typeof prop === "string" && /^\d+$/.test(prop)) return true;
+          return Reflect.has(target, prop);
+        },
+      });
+      const { blocks, warnings } = toSlackBlocks(hostileRoot);
+      expect(Array.isArray(blocks)).toBe(true);
+      expect(warnings).toContainEqual(
+        expect.objectContaining({ code: "clamped", component: "Root" }),
+      );
+    });
+
     it("omits the button value instead of throwing when the action payload is circular", () => {
       const circular: Record<string, unknown> = { type: "loop" };
       circular["self"] = circular;
@@ -1783,6 +1807,87 @@ describe("toSlackBlocks", () => {
             action_id: "loop",
           },
         ],
+      });
+    });
+  });
+
+  describe("node budget and cycle guard", () => {
+    it("bounds a self-referential children array instead of looping forever", () => {
+      const arr: unknown[] = [];
+      const el = { $type: "Card", children: arr };
+      arr.push(el);
+      const { warnings } = toSlackBlocks(el);
+      expect(warnings).toContainEqual({
+        code: "clamped",
+        component: "Root",
+        detail: "a self-referencing node was dropped.",
+      });
+    });
+
+    it("bounds a shared-reference fan-out across nested levels with a budget warning instead of doing exponential work", () => {
+      let shared: unknown = { $type: "Text", value: "leaf" };
+      for (let level = 0; level < 3; level++) {
+        shared = {
+          $type: "Card",
+          children: Array.from({ length: 200 }, () => shared),
+        };
+      }
+      const { warnings } = toSlackBlocks(shared);
+      expect(warnings).toContainEqual({
+        code: "clamped",
+        component: "Root",
+        detail: `the tree was truncated after ${NODE_BUDGET} nodes.`,
+      });
+    });
+
+    it("clamps a benign tree past the node budget with exactly one budget warning", () => {
+      const rows = Array.from({ length: 60 }, (_, r) => ({
+        $type: "Col",
+        children: Array.from({ length: 100 }, (_, c) => ({
+          $type: "Caption",
+          value: `r${r}c${c}`,
+        })),
+      }));
+      const { blocks, warnings } = toSlackBlocks(rows);
+      expect(blocks.length).toBeLessThan(6000);
+      const budgetWarnings = warnings.filter(
+        (warning) =>
+          warning.code === "clamped" &&
+          warning.component === "Root" &&
+          warning.detail ===
+            `the tree was truncated after ${NODE_BUDGET} nodes.`,
+      );
+      expect(budgetWarnings).toHaveLength(1);
+    });
+
+    it("clamps a shared-reference array past the children cap without treating the reuse as a cycle", () => {
+      const card = { $type: "Card", title: "shared" };
+      let node: unknown = Array.from({ length: 201 }, () => card);
+      for (let level = 0; level < 3; level++) {
+        node = { $type: "Col", children: node };
+      }
+      const { warnings } = toSlackBlocks(node);
+      expect(warnings).toContainEqual({
+        code: "clamped",
+        component: "Root",
+        detail: `children were clamped to ${CHILDREN_CAP} entries.`,
+      });
+      expect(
+        warnings.some((warning) => warning.detail.includes("self-referencing")),
+      ).toBe(false);
+    });
+
+    it("converts a 70-level-deep chain successfully and reports the depth detail", () => {
+      let node: unknown = { $type: "Caption", value: "x" };
+      for (let i = 0; i < 70; i++) {
+        node = { $type: "Card", children: [node] };
+      }
+      expect(() => toSlackBlocks(node)).not.toThrow();
+      const { warnings } = toSlackBlocks(node);
+      expect(warnings).toContainEqual({
+        code: "clamped",
+        component: "Root",
+        detail: "nodes deeper than 64 levels were dropped.",
       });
     });
   });
