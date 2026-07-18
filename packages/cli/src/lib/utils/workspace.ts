@@ -1,6 +1,16 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+export function resolveRealPath(inputPath: string): string {
+  const resolved = path.resolve(inputPath);
+
+  try {
+    return fs.realpathSync(resolved);
+  } catch {
+    return resolved;
+  }
+}
+
 export function findWorkspaceRoot(cwd: string): string | null {
   let dir = path.resolve(cwd);
   const root = path.parse(dir).root;
