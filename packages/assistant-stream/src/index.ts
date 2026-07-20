@@ -62,12 +62,26 @@ export {
 export type { TextStreamController } from "./core/modules/text";
 export type { ToolCallStreamController } from "./core/modules/tool-call";
 
-export { createObjectStream } from "./core/object/createObjectStream";
-export {
-  ObjectStreamResponse,
-  fromObjectStreamResponse,
-} from "./core/object/ObjectStreamResponse";
-export type { ObjectStreamChunk } from "./core/object/types";
+import { createGorpStream } from "./core/gorp/createGorpStream";
+import {
+  GorpStreamResponse,
+  fromGorpStreamResponse,
+} from "./core/gorp/GorpStreamResponse";
+import type { GorpStreamChunk } from "./core/gorp/types";
+
+export { createGorpStream, GorpStreamResponse, fromGorpStreamResponse };
+export type { GorpStreamChunk };
+
+/** @deprecated Use `createGorpStream` instead. */
+export const createObjectStream = createGorpStream;
+/** @deprecated Use `GorpStreamResponse` instead. */
+export const ObjectStreamResponse = GorpStreamResponse;
+/** @deprecated Use `GorpStreamResponse` instead. */
+export type ObjectStreamResponse = GorpStreamResponse;
+/** @deprecated Use `fromGorpStreamResponse` instead. */
+export const fromObjectStreamResponse = fromGorpStreamResponse;
+/** @deprecated Use `GorpStreamChunk` instead. */
+export type ObjectStreamChunk = GorpStreamChunk;
 
 export {
   toGenericMessages,
