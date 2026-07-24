@@ -948,12 +948,8 @@ describe("ToolInvocationTracker", () => {
     // result replacement) and verifying streamCall fires exactly once.
     //
     // The pathological mid-stream regression case (A.2) is covered by
-    // the dedicated regression test above. Mixing A.2 with a backend
-    // result in the same snapshot exposes a separate issue inside
-    // assistant-stream's `ToolCallStreamController.setResponse` ordering
-    // (parse-failure result reaches the reader before the backend
-    // result); that's tracked separately and out of scope for the
-    // tracker-level contract.
+    // the assistant-stream ordering regression test in
+    // packages/assistant-stream/src/core/modules/tool-call.test.ts.
     const streamCall = vi.fn();
     const execute = vi.fn(async () => ({ forecast: "ok" }));
     const getTools = () => ({
